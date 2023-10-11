@@ -63,62 +63,83 @@ func main() {
 		given by the user) and is printed to the terminal.
 
 	*/
-	if err != nil {
-		exit(fmt.Sprintf("Failed to open the CSV file: %s\n", *csvFilename))
-	}
-	/// func csv.NewReader(r io.Reader) *csv.Reader
-	// NewReader returns a reader that reads from (file)
-	r := csv.NewReader(file)
-	lines, err := r.ReadAll()
-	if err != nil {
-		exit("Failed to parse the provided CSV file.")
-	}
-	problems := parseLines(lines)
+	// Check if there was an error opening the CSV file. If so, exit the program with an error message.
+if err != nil {
+	exit(fmt.Sprintf("Failed to open the CSV file: %s\n", *csvFilename))
+}
 
-	timer := time.NewTimer(time.Duration(*timeLimit) * time.Second)
-	correct := 0
+// Create a new CSV reader from the opened file.
+r := csv.NewReader(file)
 
+// Read all the lines from the CSV file.
+lines, err := r.ReadAll()
+if err != nil {
+	exit("Failed to parse the provided CSV file.")
+}
+
+// Parse the read lines into a list of problems.
+problems := parseLines(lines)
+
+// Create a new timer for the quiz with the given time limit.
+timer := time.NewTimer(time.Duration(*timeLimit) * time.Second)
+
+// Variable to track the number of correct answers.
+correct := 0
+
+// Label for the outer loop to break out of it from inner select statement.
 problemloop:
-	for i, p := range problems {
-		fmt.Printf("Problem #%d: %s = ", i+1, p.q)
-		answerCh := make(chan string)
-		go func() {
-			var answer string
-			fmt.Scanf("%s\n", &answer)
-			answerCh <- answer
-		}()
+for i, p := range problems {
+	// Prompt the user with the problem.
+	fmt.Printf("Problem #%d: %s = ", i+1, p.q)
 
-		select {
-		case <-timer.C:
-			fmt.Println()
-			break problemloop
-		case answer := <-answerCh:
-			if answer == p.a {
-				correct++
-			}
+	// Channel to receive the answer from the user.
+	answerCh := make(chan string)
+
+	// Goroutine to read user's answer.
+	go func() {
+		var answer string
+		fmt.Scanf("%s\n", &answer)
+		answerCh <- answer
+	}()
+
+	// Select statement to wait either for the timer to finish or to get an answer from the user.
+	select {
+	case <-timer.C:
+		// Timer has finished.
+		fmt.Println()
+		break problemloop
+	case answer := <-answerCh:
+		// Received an answer from the user.
+		if answer == p.a {
+			correct++
 		}
 	}
-
-	fmt.Printf("You scored %d out of %d.\n", correct, len(problems))
 }
 
+// Print the user's score at the end of the quiz.
+fmt.Printf("You scored %d out of %d.\n", correct, len(problems))
+}
+
+// Function to parse lines from the CSV into a list of problems.
 func parseLines(lines [][]string) []problem {
-	ret := make([]problem, len(lines))
-	for i, line := range lines {
-		ret[i] = problem{
-			q: line[0],
-			a: strings.TrimSpace(line[1]),
-		}
+ret := make([]problem, len(lines))
+for i, line := range lines {
+	ret[i] = problem{
+		q: line[0],
+		a: strings.TrimSpace(line[1]),
 	}
-	return ret
+}
+return ret
 }
 
+// Struct to define a problem with a question and an answer.
 type problem struct {
-	q string
-	a string
+q string
+a string
 }
 
+// Function to print an error message and then exit the program.
 func exit(msg string) {
-	fmt.Println(msg)
-	os.Exit(1)
+fmt.Println(msg)
+os.Exit(1)
 }
