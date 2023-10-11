@@ -15,7 +15,7 @@ You need Go installed on your system to run this program.
    1. -csv (string): Specifies the CSV file containing questions and answers. Default is "problems.csv".
    2. -limit (int): Sets the time limit for each question in seconds. Default is 30 seconds.
 5. The program will display each question one by one. Enter your answer within the specified time limit for each question.
-6. 6After completing the quiz, the program will display your score.
+6. After completing the quiz, the program will display your score.
 7. To exit the program at any time, press Ctrl+C.
 
 ## CSV File Format
