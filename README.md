@@ -29,3 +29,7 @@ What is 2 + 2?,4
 ```
 
 Each line consists of a question and its corresponding answer separated by a comma.
+
+## Credits
+
+This program is based on tutorials by John Calhoun. I followed along with his guidance, and plan to expan upon it very soon. Special thanks to John for his valuable teachings and resources, please check out https://gophercises.com/ and support his work.
