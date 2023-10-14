@@ -1,3 +1,5 @@
+// For any future reader - I apologize for the excessive comments - it was my first GoLang project!
+
 package main
 
 import (
